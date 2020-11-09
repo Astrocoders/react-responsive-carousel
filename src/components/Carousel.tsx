@@ -255,13 +255,7 @@ export default class Carousel extends React.Component<Props, State> {
                 initialized: true,
             },
             () => {
-                const initialImage = this.getInitialImage();
-                if (initialImage && !initialImage.complete) {
-                    // if it's a carousel of images, we set the mount state after the first image is loaded
-                    initialImage.addEventListener('load', this.setMountState);
-                } else {
-                    this.setMountState();
-                }
+                this.setMountState();
             }
         );
     }
@@ -309,12 +303,6 @@ export default class Carousel extends React.Component<Props, State> {
         // removing listeners
         getWindow().removeEventListener('resize', this.updateSizes);
         getWindow().removeEventListener('DOMContentLoaded', this.updateSizes);
-
-        const initialImage = this.getInitialImage();
-
-        if (initialImage) {
-            initialImage.removeEventListener('load', this.setMountState);
-        }
 
         if (this.props.useKeyboardArrows) {
             getDocument().removeEventListener('keydown', this.navigateWithKeyboard);
@@ -669,13 +657,6 @@ export default class Carousel extends React.Component<Props, State> {
     selectItem = (state: Pick<State, 'selectedItem' | 'swiping'>, cb?: () => void) => {
         this.setState(state, cb);
         this.handleOnChange(state.selectedItem, Children.toArray(this.props.children)[state.selectedItem]);
-    };
-
-    getInitialImage = () => {
-        const selectedItem = this.props.selectedItem;
-        const item = this.itemsRef && this.itemsRef[selectedItem];
-        const images = (item && item.getElementsByTagName('img')) || [];
-        return images[0];
     };
 
     getVariableItemHeight = (position: number) => {
